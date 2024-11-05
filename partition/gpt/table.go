@@ -221,6 +221,23 @@ func (t *Table) generateProtectiveMBR() []byte {
 	return b
 }
 
+func findFirstFree(all []*Partition) int {
+	var used [128]int
+	for _, current := range all {
+		if current.Index > 0 {
+			used[current.Index] = 1
+		}
+	}
+
+	for i, x := range used {
+		if x == 0 {
+			return i
+		}
+	}
+
+	return -1
+}
+
 // toPartitionArrayBytes write the bytes for the partition array
 func (t *Table) toPartitionArrayBytes() ([]byte, error) {
 	blocksize := uint64(t.LogicalSectorSize)
@@ -240,13 +257,22 @@ func (t *Table) toPartitionArrayBytes() ([]byte, error) {
 	// generate the partition bytes
 	partSize := t.partitionEntrySize * uint32(t.partitionArraySize)
 	bpart := make([]byte, partSize)
-	for i, p := range t.Partitions {
+	for _, p := range t.Partitions {
+		index := p.Index
+		if index < 0 {
+			index := findFirstFree(t.Partitions)
+			if index < 0 {
+				return nil, fmt.Errorf("could not find free partition")
+			}
+			// update the partitions index
+			p.Index = index
+		}
 		// write the primary partition entry
 		b2, err := p.toBytes()
 		if err != nil {
-			return nil, fmt.Errorf("error preparing partition entry %d for writing to disk: %v", i, err)
+			return nil, fmt.Errorf("error preparing partition entry %d for writing to disk: %v", index, err)
 		}
-		slotStart := i * int(t.partitionEntrySize)
+		slotStart := index * int(t.partitionEntrySize)
 		slotEnd := slotStart + int(t.partitionEntrySize)
 		copy(bpart[slotStart:slotEnd], b2)
 	}
@@ -338,11 +364,13 @@ func readPartitionArrayBytes(b []byte, entrySize, logicalSectorSize, physicalSec
 		if err != nil {
 			return nil, fmt.Errorf("error reading partition entry %d: %v", i, err)
 		}
+		// no partition found
 		if p == nil {
 			continue
 		}
 		// augment partition information
 		p.Size = (p.End - p.Start + 1) * uint64(logicalSectorSize)
+		p.Index = i + 1 // indexs start at 1
 		parts = append(parts, p)
 	}
 	return parts, nil

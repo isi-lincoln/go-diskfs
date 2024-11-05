@@ -27,6 +27,7 @@ type Partition struct {
 	Name               string // name for the partition
 	GUID               string // partition GUID, can be left blank to auto-generate
 	Attributes         uint64 // Attributes flags
+	Index              int    // number partition for non-sequential layouts
 	logicalSectorSize  int
 	physicalSectorSize int
 }
@@ -301,4 +302,16 @@ func (p *Partition) UUID() string {
 func (p *Partition) Expand(sectors uint64) {
 	p.End += sectors
 	p.Size += sectors * uint64(p.logicalSectorSize)
+}
+
+func (p *Partition) GetPartitionNumber() int {
+	return p.Index
+}
+
+func (p *Partition) GetPartitionType() string {
+	v, ok := GuidTable[string(p.Type)]
+	if !ok {
+		return "Unknown Parition"
+	}
+	return v
 }
