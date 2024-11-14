@@ -617,6 +617,10 @@ func (t *Table) GetPartitions() []part.Partition {
 	return parts
 }
 
+func (t *Table) SetPartitions(parts []*Partition) {
+	t.Partitions = parts
+}
+
 // UUID returns the partition table UUID (disk UUID)
 func (t *Table) UUID() string {
 	return t.GUID

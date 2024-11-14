@@ -304,8 +304,29 @@ func (p *Partition) Expand(sectors uint64) {
 	p.Size += sectors * uint64(p.logicalSectorSize)
 }
 
+func (p *Partition) SetGUID(guid string) error {
+	GUID, err := uuid.Parse(guid)
+	if err != nil {
+		return fmt.Errorf("SetGUID: unable to parse GUID: %v", err)
+	}
+
+	p.GUID = strings.ToUpper(GUID.String())
+
+	return nil
+}
+
 func (p *Partition) GetPartitionNumber() int {
 	return p.Index
+}
+
+func (p *Partition) SetPartitionNumber(index int) error {
+	if index < 1 {
+		return fmt.Errorf("Index must be non-zero and non negative partition number")
+	}
+
+	p.Index = index
+
+	return nil
 }
 
 func (p *Partition) GetPartitionType() string {
@@ -314,4 +335,43 @@ func (p *Partition) GetPartitionType() string {
 		return "Unknown Parition"
 	}
 	return v
+}
+
+func (p *Partition) SetPartitionType(ptype string) error {
+	typeGUID, err := uuid.Parse(ptype)
+	if err != nil {
+		return fmt.Errorf("partition type: unable to parse partition type GUID: %v", err)
+	}
+
+	// check for valid type - nothing to stop it from not being a known
+	// type, but we can put this in to stop one from mistaskes and if they
+	// still want to set it, they can remove this check
+	v, ok := GuidTable[strings.ToUpper(typeGUID.String())]
+	if !ok {
+		return fmt.Errorf("partition type: unknown partition type, add type to gpt/types.go")
+	}
+
+	p.Type = Type(v)
+
+	return nil
+}
+
+func (p *Partition) GetName() string {
+	return p.Name
+}
+
+func (p *Partition) SetName(name string) error {
+	// now the partition name - it is UTF16LE encoded, max 36 code units for 72 bytes
+	r := make([]rune, 0, len(name))
+	// first convert to runes
+	for _, s := range name {
+		r = append(r, s)
+	}
+	if len(r) > 36 {
+		return fmt.Errorf("partition name is too long, must be under 36 bytes")
+	}
+
+	p.Name = name
+
+	return nil
 }
