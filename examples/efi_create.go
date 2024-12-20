@@ -7,10 +7,10 @@ import (
 	"log"
 	"os"
 
-	diskfs "github.com/diskfs/go-diskfs"
-	diskpkg "github.com/diskfs/go-diskfs/disk"
-	"github.com/diskfs/go-diskfs/filesystem"
-	"github.com/diskfs/go-diskfs/partition/gpt"
+	diskfs "github.com/isi-lincoln/go-diskfs"
+	diskpkg "github.com/isi-lincoln/go-diskfs/disk"
+	"github.com/isi-lincoln/go-diskfs/filesystem"
+	"github.com/isi-lincoln/go-diskfs/partition/gpt"
 )
 
 func CreateEfi(diskImg string) {

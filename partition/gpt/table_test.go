@@ -14,8 +14,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/diskfs/go-diskfs/partition/gpt"
-	"github.com/diskfs/go-diskfs/testhelper"
+	"github.com/isi-lincoln/go-diskfs/partition/gpt"
+	"github.com/isi-lincoln/go-diskfs/testhelper"
 )
 
 const (

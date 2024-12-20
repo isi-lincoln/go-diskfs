@@ -7,10 +7,10 @@ import (
 	"os"
 	"path/filepath"
 
-	diskfs "github.com/diskfs/go-diskfs"
-	"github.com/diskfs/go-diskfs/disk"
-	"github.com/diskfs/go-diskfs/filesystem"
-	"github.com/diskfs/go-diskfs/filesystem/iso9660"
+	diskfs "github.com/isi-lincoln/go-diskfs"
+	"github.com/isi-lincoln/go-diskfs/disk"
+	"github.com/isi-lincoln/go-diskfs/filesystem"
+	"github.com/isi-lincoln/go-diskfs/filesystem/iso9660"
 )
 
 func check(err error) {

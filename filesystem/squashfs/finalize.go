@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/diskfs/go-diskfs/util"
+	"github.com/isi-lincoln/go-diskfs/util"
 	"github.com/pkg/xattr"
 )
 

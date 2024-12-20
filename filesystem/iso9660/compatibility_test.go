@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/diskfs/go-diskfs/filesystem"
+	"github.com/isi-lincoln/go-diskfs/filesystem"
 )
 
 func TestISO9660FSCompatibility(t *testing.T) {
